@@ -1,0 +1,123 @@
+from fastapi import FastAPI, HTTPException, Body
+from pydantic import BaseModel
+import subprocess
+import tempfile
+import os
+from rdflib import Graph, Namespace
+from rdflib.namespace import RDF
+import json
+from .schemas import SHACL_SCHEMAS
+
+app = FastAPI(title="Embedded SHACL Validator")
+
+SH = Namespace("http://www.w3.org/ns/shacl#")
+
+# ----------------- Helper -----------------
+
+def validate_rdf(rdf_data: str, data_format: str, schema_name: str):
+    if schema_name not in SHACL_SCHEMAS:
+        raise HTTPException(status_code=404, detail="Unknown SHACL schema")
+
+    shapes_ttl = SHACL_SCHEMAS[schema_name]
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        data_file = os.path.join(tmpdir, "data.rdf")
+        shapes_file = os.path.join(tmpdir, "shapes.ttl")
+
+        with open(data_file, "w") as f:
+            f.write(rdf_data)
+
+        with open(shapes_file, "w") as f:
+            f.write(shapes_ttl)
+
+        cmd = [
+            "rudof", "validate",
+            "--mode", "shacl",
+            "--data-format", data_format,
+            "--schema-format", "turtle",
+            "--result-format", "turtle",
+            data_file,
+            "--schema", shapes_file
+        ]
+
+        try:
+            result = subprocess.run(
+                cmd, capture_output=True, text=True, check=True
+            )
+
+            g = Graph()
+            g.parse(data=result.stdout, format="turtle")
+
+            report = next(g.subjects(RDF.type, SH.ValidationReport), None)
+            conforms = bool(next(g.objects(report, SH.conforms), False))
+
+            results = []
+            for res in g.objects(report, SH.result):
+                results.append({
+                    "focusNode": str(next(g.objects(res, SH.focusNode), None)),
+                    "path": str(next(g.objects(res, SH.resultPath), None)),
+                    "message": str(next(g.objects(res, SH.resultMessage), None)),
+                    "severity": str(next(g.objects(res, SH.resultSeverity), None)),
+                    "value": str(next(g.objects(res, SH.value), None)),
+                })
+
+            return {"schema": schema_name, "conforms": conforms, "results": results}
+
+        except subprocess.CalledProcessError as e:
+            raise HTTPException(status_code=400, detail=e.stderr)
+
+
+# ----------------- API Endpoints -----------------
+
+@app.post("/validate/test/turtle")
+def validate_test_turtle(data: str = Body(..., media_type="text/plain")):
+    return validate_rdf(data, "turtle", "test")
+
+@app.post("/validate/testResult/turtle")
+def validate_testResult_turtle(data: str = Body(..., media_type="text/plain")):
+    return validate_rdf(data, "turtle", "testResult")
+
+@app.post("/validate/testResultSet/turtle")
+def validate_testResultSet_turtle(data: str = Body(..., media_type="text/plain")):
+    return validate_rdf(data, "turtle", "testResultSet")
+
+@app.post("/validate/metric/turtle")
+def validate_metric_turtle(data: str = Body(..., media_type="text/plain")):
+    return validate_rdf(data, "turtle", "metric")
+
+@app.post("/validate/benchmark/turtle")
+def validate_benchmark_turtle(data: str = Body(..., media_type="text/plain")):
+    return validate_rdf(data, "turtle", "benchmark")
+
+
+# class JSONLDRequest(BaseModel):
+#     data: dict
+
+# @app.post("/validate/test/jsonld")
+# def validate_test_jsonld(req: JSONLDRequest):
+#     return validate_rdf(json.dumps(req.data), "jsonld", "test")
+
+
+# @app.post("/validate/testResult/jsonld")
+# def validate_testResult_jsonld(req: JSONLDRequest):
+#     return validate_rdf(json.dumps(req.data), "jsonld", "testResult")
+
+
+# @app.post("/validate/testResultSet/jsonld")
+# def validate_testResultSet_jsonld(req: JSONLDRequest):
+#     return validate_rdf(json.dumps(req.data), "jsonld", "testResultSet")
+
+
+
+################################
+
+
+
+# @app.post("/validate/{schema}/turtle")
+# def validate_turtle(schema: str, data: str = Body(..., media_type="text/plain")):
+#     return validate_rdf(data, "turtle", schema)
+
+
+# @app.post("/validate/{schema}/jsonld")
+# def validate_jsonld(schema: str, req: JSONLDRequest):
+#     return validate_rdf(json.dumps(req.data), "jsonld", schema)
