@@ -35,7 +35,7 @@ Use Docker:
 
 
 ```bash
-docker run -p 8000:8000 pabloalarconm/fair-assessment-record-validator:0.2.0
+docker run -p 8000:8000 pabloalarconm/fair-assessment-record-validator:0.2.1
 ```
 
 Also, you can use Docker Compose:
@@ -45,7 +45,7 @@ version: "3.8"
 
 services:
   api:
-    image: pabloalarconm/fair-assessment-record-validator:0.2.0
+    image: pabloalarconm/fair-assessment-record-validator:0.2.1
     ports:
       - "8000:8000"
 ```

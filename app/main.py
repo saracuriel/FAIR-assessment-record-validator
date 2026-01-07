@@ -8,7 +8,11 @@ from rdflib.namespace import RDF
 import json
 from .schemas import SHACL_SCHEMAS
 
-app = FastAPI(title="Embedded SHACL Validator")
+app = FastAPI(title="Embedded SHACL Validator",
+            docs_url="/validate/docs",
+            redoc_url=None,
+            openapi_url="/validate/openapi.json",
+)
 
 SH = Namespace("http://www.w3.org/ns/shacl#")
 
@@ -68,6 +72,13 @@ def validate_rdf(rdf_data: str, data_format: str, schema_name: str):
 
 
 # ----------------- API Endpoints -----------------
+
+@app.get("/validate/", summary="Health check", description="Verify that the API is running correctly.")
+async def health_check():
+    return {
+        "status": "ok",
+        "message": "API is running. See /validate/docs for interactive documentation.",
+    }
 
 @app.post("/validate/test/turtle")
 def validate_test_turtle(data: str = Body(..., media_type="text/plain")):
