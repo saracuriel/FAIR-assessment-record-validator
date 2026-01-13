@@ -2,23 +2,35 @@
 
 ### Embedded SHACL Validator API
 
-A lightweight **FastAPI-based SHACL validation service** for validating RDF data (Turtle) against predefined SHACL shapes.  
+A lightweight **FastAPI-based SHACL validation service** for validating RDF data (Turtle or JSON-LD) against predefined SHACL shapes.  
 
 The service embeds SHACL schemas directly in code and delegates validation to an external SHACL engine (`rudof`), returning a structured validation report.
 
 ## Endpoints
 
-All endpoints accept RDF as raw text (text/plain):
+**Turtle** endpoints, accepted as raw text (`text/plain`):
 
-POST /validate/test/turtle
+* POST /validate/test/turtle
 
-POST /validate/testResult/turtle
+* POST /validate/testResult/turtle
 
-POST /validate/testResultSet/turtle
+* POST /validate/testResultSet/turtle
 
-POST /validate/metric/turtle
+* POST /validate/metric/turtle
 
-POST /validate/benchmark/turtle
+* POST /validate/benchmark/turtle
+
+**JSON-LD** endpoints, accepted as `application/json`:
+
+* POST /validate/test/jsonld
+
+* POST /validate/testResult/jsonld
+
+* POST /validate/testResultSet/jsonld
+
+* POST /validate/metric/jsonld
+
+* POST /validate/benchmark/jsonld
 
 
 ## Example
@@ -35,7 +47,7 @@ Use Docker:
 
 
 ```bash
-docker run -p 8000:8000 pabloalarconm/fair-assessment-record-validator:0.2.1
+docker run -p 8000:8000 pabloalarconm/fair-assessment-record-validator:0.3.0
 ```
 
 Also, you can use Docker Compose:
@@ -45,7 +57,7 @@ version: "3.8"
 
 services:
   api:
-    image: pabloalarconm/fair-assessment-record-validator:0.2.1
+    image: pabloalarconm/fair-assessment-record-validator:0.3.0
     ports:
       - "8000:8000"
 ```

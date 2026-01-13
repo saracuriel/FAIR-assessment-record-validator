@@ -79,56 +79,61 @@ async def health_check():
         "status": "ok",
         "message": "API is running. See /validate/docs for interactive documentation.",
     }
+############### Turtle #################
 
-@app.post("/validate/test/turtle")
+@app.post("/validate/test/turtle",
+        summary="Validate your Turtle against SHACL-compliant FTR model")
 def validate_test_turtle(data: str = Body(..., media_type="text/plain")):
     return validate_rdf(data, "turtle", "test")
 
-@app.post("/validate/testResult/turtle")
+@app.post("/validate/testResult/turtle",
+        summary="Validate your Turtle against SHACL-compliant FTR model")
 def validate_testResult_turtle(data: str = Body(..., media_type="text/plain")):
     return validate_rdf(data, "turtle", "testResult")
 
-@app.post("/validate/testResultSet/turtle")
+@app.post("/validate/testResultSet/turtle",
+        summary="Validate your Turtle against SHACL-compliant FTR model")
 def validate_testResultSet_turtle(data: str = Body(..., media_type="text/plain")):
     return validate_rdf(data, "turtle", "testResultSet")
 
-@app.post("/validate/metric/turtle")
+@app.post("/validate/metric/turtle",
+        summary="Validate your Turtle against SHACL-compliant FTR model")
 def validate_metric_turtle(data: str = Body(..., media_type="text/plain")):
     return validate_rdf(data, "turtle", "metric")
 
-@app.post("/validate/benchmark/turtle")
+@app.post("/validate/benchmark/turtle",
+        summary="Validate your Turtle against SHACL-compliant FTR model")
 def validate_benchmark_turtle(data: str = Body(..., media_type="text/plain")):
     return validate_rdf(data, "turtle", "benchmark")
 
+############### JSON-LD #################
 
-# class JSONLDRequest(BaseModel):
-#     data: dict
+@app.post("/validate/test/jsonld",
+        summary="Validate your JSON-LD against SHACL-compliant FTR model",
+        description="""Remove the described existing example input and paste your JSON-LD metadata""")
+def validate_test_jsonld(data: dict):
+    return validate_rdf(json.dumps(data), "jsonld", "test")
 
-# @app.post("/validate/test/jsonld")
-# def validate_test_jsonld(req: JSONLDRequest):
-#     return validate_rdf(json.dumps(req.data), "jsonld", "test")
+@app.post("/validate/testResult/jsonld",
+        summary="Validate your JSON-LD against SHACL-compliant FTR model",
+        description="""Remove the described existing example input and paste your JSON-LD metadata""")
+def validate_testResult_jsonld(data: dict):
+    return validate_rdf(json.dumps(data), "jsonld", "testResult")
 
+@app.post("/validate/testResultSet/jsonld",
+        summary="Validate your JSON-LD against SHACL-compliant FTR model",
+        description="""Remove the described existing example input and paste your JSON-LD metadata""")
+def validate_testResultSet_jsonld(data: dict):
+    return validate_rdf(json.dumps(data), "jsonld", "testResultSet")
 
-# @app.post("/validate/testResult/jsonld")
-# def validate_testResult_jsonld(req: JSONLDRequest):
-#     return validate_rdf(json.dumps(req.data), "jsonld", "testResult")
+@app.post("/validate/metric/jsonld",
+        summary="Validate your JSON-LD against SHACL-compliant FTR model",
+        description="""Remove the described existing example input and paste your JSON-LD metadata""")
+def validate_metric_jsonld(data: dict):
+    return validate_rdf(json.dumps(data), "jsonld", "metric")
 
-
-# @app.post("/validate/testResultSet/jsonld")
-# def validate_testResultSet_jsonld(req: JSONLDRequest):
-#     return validate_rdf(json.dumps(req.data), "jsonld", "testResultSet")
-
-
-
-################################
-
-
-
-# @app.post("/validate/{schema}/turtle")
-# def validate_turtle(schema: str, data: str = Body(..., media_type="text/plain")):
-#     return validate_rdf(data, "turtle", schema)
-
-
-# @app.post("/validate/{schema}/jsonld")
-# def validate_jsonld(schema: str, req: JSONLDRequest):
-#     return validate_rdf(json.dumps(req.data), "jsonld", schema)
+@app.post("/validate/benchmark/jsonld",
+        summary="Validate your JSON-LD against SHACL-compliant FTR model",
+        description="""Remove the described existing example input and paste your JSON-LD metadata""")
+def validate_benchmark_jsonld(data: dict):
+    return validate_rdf(json.dumps(data), "jsonld", "benchmark")
