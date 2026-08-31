@@ -106,6 +106,16 @@ def validate_metric_turtle(data: str = Body(..., media_type="text/plain")):
 def validate_benchmark_turtle(data: str = Body(..., media_type="text/plain")):
     return validate_rdf(data, "turtle", "benchmark")
 
+@app.post("/validate/scoringAlgorithm/turtle",
+        summary="Validate your Turtle against SHACL-compliant FTR model")
+def validate_scoringAlgorithm_turtle(data: str = Body(..., media_type="text/plain")):
+    return validate_rdf(data, "turtle", "scoringAlgorithm")
+
+@app.post("/validate/benchmarkScore/turtle",
+        summary="Validate your Turtle against SHACL-compliant FTR model")
+def validate_benchmarkScore_turtle(data: str = Body(..., media_type="text/plain")):
+    return validate_rdf(data, "turtle", "benchmarkScore")
+
 ############### JSON-LD #################
 
 @app.post("/validate/test/jsonld",
@@ -137,3 +147,16 @@ def validate_metric_jsonld(data: dict):
         description="""Remove the described existing example input and paste your JSON-LD metadata""")
 def validate_benchmark_jsonld(data: dict):
     return validate_rdf(json.dumps(data), "jsonld", "benchmark")
+
+@app.post("/validate/scoringAlgorithm/jsonld",
+        summary="Validate your JSON-LD against SHACL-compliant FTR model",
+        description="""Remove the described existing example input and paste your JSON-LD metadata""")
+def validate_scoringAlgorithm_jsonld(data: dict):
+    return validate_rdf(json.dumps(data), "jsonld", "scoringAlgorithm")
+
+
+@app.post("/validate/benchmarkScore/jsonld",
+        summary="Validate your JSON-LD against SHACL-compliant FTR model",
+        description="""Remove the described existing example input and paste your JSON-LD metadata""")
+def validate_benchmarkScore_jsonld(data: dict):
+    return validate_rdf(json.dumps(data), "jsonld", "benchmarkScore")
