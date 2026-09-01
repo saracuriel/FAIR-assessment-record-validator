@@ -2,6 +2,6 @@ version: "3.8"
 
 services:
   api:
-    image: pabloalarconm/fair-assessment-record-validator:0.3.0
+    image: saracuriel/far-validator:0.0.1
     ports:
       - "8000:8000"
