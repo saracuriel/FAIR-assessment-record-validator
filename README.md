@@ -20,6 +20,10 @@ The service embeds SHACL schemas directly in code and delegates validation to an
 
 * POST /validate/benchmark/turtle
 
+* POST /validate/scoringAlgorithm/turtle
+
+* POST /validate/benchmarkScore/turtle
+
 **JSON-LD** endpoints, accepted as `application/json`:
 
 * POST /validate/test/jsonld
@@ -31,6 +35,10 @@ The service embeds SHACL schemas directly in code and delegates validation to an
 * POST /validate/metric/jsonld
 
 * POST /validate/benchmark/jsonld
+
+* POST /validate/scoringAlgorithm/jsonld
+
+* POST /validate/benchmarkScore/jsonld
 
 
 ## Example
@@ -47,7 +55,7 @@ Use Docker:
 
 
 ```bash
-docker run -p 8000:8000 pabloalarconm/fair-assessment-record-validator:0.3.0
+docker run -p 8000:8000 saracuriel/far-validator:0.0.1
 ```
 
 Also, you can use Docker Compose:
@@ -57,7 +65,9 @@ version: "3.8"
 
 services:
   api:
-    image: pabloalarconm/fair-assessment-record-validator:0.3.0
+    image: saracuriel/far-validator:0.0.1
     ports:
       - "8000:8000"
 ```
+
+You can access the execution endpoints from FastAPI by entering http://localhost:8000/validate/docs in your browser.
